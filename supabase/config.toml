@@ -1,0 +1,25 @@
+project_id = "metwadxcoehqlfsvpbqr"
+
+[functions.chat-ai]
+verify_jwt = false
+
+[functions.document-summarize]
+verify_jwt = false
+
+[functions.generate-image]
+verify_jwt = false
+
+[functions.animate-image]
+verify_jwt = false
+
+[functions.finance-advice]
+verify_jwt = false
+
+[functions.health-insights]
+verify_jwt = false
+
+[functions.learning-assistant]
+verify_jwt = false
+
+[functions.send-report]
+verify_jwt = false

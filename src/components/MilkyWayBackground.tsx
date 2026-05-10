@@ -1,0 +1,425 @@
+import { useMemo } from "react";
+import { motion } from "framer-motion";
+
+interface Star {
+  id: number;
+  x: number;
+  y: number;
+  size: number;
+  opacity: number;
+  duration: number;
+  delay: number;
+  color: string;
+}
+
+interface Nebula {
+  id: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  color1: string;
+  color2: string;
+  rotation: number;
+  duration: number;
+}
+
+interface ShootingStar {
+  id: number;
+  startX: number;
+  startY: number;
+  duration: number;
+  delay: number;
+  color: string;
+  length: number;
+}
+
+export function MilkyWayBackground() {
+
+  // Generate milky way star clusters
+  const stars: Star[] = useMemo(() => 
+    Array.from({ length: 200 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 3 + 0.5,
+      opacity: Math.random() * 0.9 + 0.1,
+      duration: Math.random() * 5 + 2,
+      delay: Math.random() * 4,
+      color: [
+        '#ffffff', '#ffd700', '#87ceeb', '#ff6b9d', 
+        '#00ff87', '#60efff', '#a855f7', '#f43f5e'
+      ][Math.floor(Math.random() * 8)],
+    })), []
+  );
+
+  // Aurora waves configuration
+  const auroraWaves = useMemo(() => [
+    { id: 1, colors: ['#00ff87', '#60efff', '#00d4ff'], top: 15, height: 350, blur: 100, duration: 18 },
+    { id: 2, colors: ['#a855f7', '#ec4899', '#f43f5e'], top: 35, height: 300, blur: 90, duration: 22 },
+    { id: 3, colors: ['#06b6d4', '#22d3ee', '#67e8f9'], top: 55, height: 280, blur: 80, duration: 20 },
+    { id: 4, colors: ['#fbbf24', '#f97316', '#ef4444'], top: 70, height: 250, blur: 70, duration: 16 },
+  ], []);
+
+  // Nebulae for milky way effect
+  const nebulae: Nebula[] = useMemo(() => [
+    { id: 1, x: 10, y: 20, width: 600, height: 300, color1: '#a855f7', color2: '#06b6d4', rotation: -15, duration: 30 },
+    { id: 2, x: 60, y: 40, width: 500, height: 250, color1: '#ec4899', color2: '#8b5cf6', rotation: 10, duration: 25 },
+    { id: 3, x: 30, y: 65, width: 550, height: 280, color1: '#00ff87', color2: '#60efff', rotation: -5, duration: 28 },
+    { id: 4, x: 75, y: 75, width: 400, height: 200, color1: '#f43f5e', color2: '#fbbf24', rotation: 20, duration: 22 },
+  ], []);
+
+  // Shooting stars
+  const shootingStars: ShootingStar[] = useMemo(() => 
+    Array.from({ length: 6 }, (_, i) => ({
+      id: i,
+      startX: Math.random() * 80 + 10,
+      startY: Math.random() * 30,
+      duration: Math.random() * 1.5 + 0.8,
+      delay: Math.random() * 15 + i * 3,
+      color: ['#00ff87', '#60efff', '#a855f7', '#f43f5e', '#fbbf24', '#ffffff'][i],
+      length: Math.random() * 100 + 80,
+    })), []
+  );
+
+  // Milky way band stars (dense cluster)
+  const milkyWayStars: Star[] = useMemo(() => 
+    Array.from({ length: 150 }, (_, i) => {
+      const bandY = 40 + (Math.random() - 0.5) * 30;
+      return {
+        id: i + 200,
+        x: Math.random() * 100,
+        y: bandY + Math.sin(i * 0.1) * 10,
+        size: Math.random() * 2 + 0.3,
+        opacity: Math.random() * 0.8 + 0.2,
+        duration: Math.random() * 4 + 2,
+        delay: Math.random() * 3,
+        color: ['#ffffff', '#ffd700', '#87ceeb', '#e0e7ff'][Math.floor(Math.random() * 4)],
+      };
+    }), []
+  );
+
+  return (
+    <div 
+      className="fixed inset-0 -z-10 overflow-hidden bg-background will-change-auto"
+    >
+      {/* Deep space gradient base */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          background: `
+            radial-gradient(ellipse at 20% 30%, hsl(260 70% 6%) 0%, transparent 50%),
+            radial-gradient(ellipse at 80% 70%, hsl(200 70% 5%) 0%, transparent 50%),
+            radial-gradient(ellipse at 50% 50%, hsl(270 50% 4%) 0%, transparent 70%),
+            hsl(var(--background))
+          `,
+        }}
+      />
+
+      {/* Milky Way band - galactic core */}
+      <div className="absolute inset-0">
+        <motion.div
+          className="absolute w-[200%] h-[40%] left-[-50%] top-[30%]"
+          style={{
+            background: `
+              linear-gradient(90deg, 
+                transparent 0%, 
+                hsl(260 40% 15% / 0.3) 20%,
+                hsl(280 50% 20% / 0.5) 40%,
+                hsl(260 60% 25% / 0.6) 50%,
+                hsl(280 50% 20% / 0.5) 60%,
+                hsl(260 40% 15% / 0.3) 80%,
+                transparent 100%
+              )
+            `,
+            filter: 'blur(80px)',
+            transform: 'rotate(-10deg)',
+          }}
+          animate={{
+            x: ['-10%', '10%', '-10%'],
+            opacity: [0.4, 0.6, 0.4],
+          }}
+          transition={{
+            duration: 40,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+      </div>
+
+      {/* Nebulae layer */}
+      <div className="absolute inset-0">
+        {nebulae.map((nebula) => (
+          <motion.div
+            key={nebula.id}
+            className="absolute rounded-full"
+            style={{
+              left: `${nebula.x}%`,
+              top: `${nebula.y}%`,
+              width: nebula.width,
+              height: nebula.height,
+              background: `radial-gradient(ellipse, ${nebula.color1}15 0%, ${nebula.color2}08 50%, transparent 70%)`,
+              filter: 'blur(50px)',
+              transform: `rotate(${nebula.rotation}deg)`,
+            }}
+            animate={{
+              scale: [1, 1.15, 0.95, 1.1, 1],
+              x: [0, 30, -20, 15, 0],
+              y: [0, -20, 15, -10, 0],
+              opacity: [0.4, 0.6, 0.5, 0.55, 0.4],
+            }}
+            transition={{
+              duration: nebula.duration,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Aurora waves */}
+      <div className="absolute inset-0">
+        {auroraWaves.map((wave, idx) => (
+          <motion.div
+            key={wave.id}
+            className="absolute w-[200%] left-[-50%]"
+            style={{
+              top: `${wave.top}%`,
+              height: wave.height,
+              filter: `blur(${wave.blur}px)`,
+              background: `linear-gradient(90deg, 
+                transparent 0%, 
+                ${wave.colors[0]}35 25%, 
+                ${wave.colors[1]}50 50%, 
+                ${wave.colors[2]}35 75%, 
+                transparent 100%
+              )`,
+            }}
+            animate={{
+              x: ['-30%', '30%', '-30%'],
+              scaleY: [1, 1.4, 0.8, 1.3, 1],
+              opacity: [0.25, 0.45, 0.35, 0.5, 0.25],
+            }}
+            transition={{
+              duration: wave.duration,
+              delay: idx * 1.5,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Main stars layer */}
+      <div className="absolute inset-0">
+        {stars.map((star) => (
+          <motion.div
+            key={star.id}
+            className="absolute rounded-full"
+            style={{
+              left: `${star.x}%`,
+              top: `${star.y}%`,
+              width: star.size,
+              height: star.size,
+              backgroundColor: star.color,
+              boxShadow: star.size > 2 ? `0 0 ${star.size * 4}px ${star.color}60` : 'none',
+            }}
+            animate={{
+              opacity: [star.opacity * 0.3, star.opacity, star.opacity * 0.4],
+              scale: [1, star.size > 2 ? 1.3 : 1.1, 1],
+            }}
+            transition={{
+              duration: star.duration,
+              repeat: Infinity,
+              delay: star.delay,
+              ease: 'easeInOut',
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Milky way band dense stars */}
+      <div className="absolute inset-0">
+        {milkyWayStars.map((star) => (
+          <motion.div
+            key={star.id}
+            className="absolute rounded-full"
+            style={{
+              left: `${star.x}%`,
+              top: `${star.y}%`,
+              width: star.size,
+              height: star.size,
+              backgroundColor: star.color,
+              boxShadow: `0 0 ${star.size * 2}px ${star.color}40`,
+            }}
+            animate={{
+              opacity: [star.opacity * 0.5, star.opacity, star.opacity * 0.5],
+            }}
+            transition={{
+              duration: star.duration,
+              repeat: Infinity,
+              delay: star.delay,
+              ease: 'easeInOut',
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Bright constellation stars */}
+      {[
+        { x: 15, y: 12, size: 5, color: '#60efff' },
+        { x: 85, y: 20, size: 6, color: '#00ff87' },
+        { x: 45, y: 35, size: 5, color: '#a855f7' },
+        { x: 25, y: 55, size: 4, color: '#f43f5e' },
+        { x: 70, y: 65, size: 5, color: '#fbbf24' },
+        { x: 90, y: 45, size: 4, color: '#ffffff' },
+        { x: 8, y: 80, size: 5, color: '#ec4899' },
+        { x: 55, y: 85, size: 4, color: '#06b6d4' },
+      ].map((star, i) => (
+        <motion.div
+          key={`constellation-${i}`}
+          className="absolute"
+          style={{ left: `${star.x}%`, top: `${star.y}%` }}
+        >
+          <motion.div
+            className="rounded-full"
+            style={{
+              width: star.size,
+              height: star.size,
+              backgroundColor: '#ffffff',
+              boxShadow: `
+                0 0 ${star.size * 3}px ${star.color},
+                0 0 ${star.size * 6}px ${star.color}80,
+                0 0 ${star.size * 10}px ${star.color}40
+              `,
+            }}
+            animate={{
+              scale: [1, 1.6, 1],
+              opacity: [0.8, 1, 0.8],
+            }}
+            transition={{
+              duration: 2.5 + i * 0.3,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          />
+          {/* Cross rays */}
+          <motion.div
+            className="absolute"
+            style={{
+              width: star.size * 20,
+              height: 1,
+              left: -star.size * 10,
+              top: star.size / 2,
+              background: `linear-gradient(90deg, transparent, ${star.color}50, transparent)`,
+            }}
+            animate={{ opacity: [0.2, 0.5, 0.2], scaleX: [0.8, 1.2, 0.8] }}
+            transition={{ duration: 3, repeat: Infinity, delay: i * 0.2 }}
+          />
+          <motion.div
+            className="absolute"
+            style={{
+              width: 1,
+              height: star.size * 20,
+              left: star.size / 2,
+              top: -star.size * 10,
+              background: `linear-gradient(180deg, transparent, ${star.color}50, transparent)`,
+            }}
+            animate={{ opacity: [0.2, 0.5, 0.2], scaleY: [0.8, 1.2, 0.8] }}
+            transition={{ duration: 3, repeat: Infinity, delay: i * 0.2 + 0.5 }}
+          />
+        </motion.div>
+      ))}
+
+      {/* Shooting stars */}
+      {shootingStars.map((star) => (
+        <motion.div
+          key={`shooting-${star.id}`}
+          className="absolute"
+          style={{
+            width: star.length,
+            height: 2,
+            left: `${star.startX}%`,
+            top: `${star.startY}%`,
+            background: `linear-gradient(90deg, transparent, ${star.color}80, ${star.color}, #ffffff)`,
+            transformOrigin: 'left center',
+            transform: 'rotate(40deg)',
+            borderRadius: '2px',
+          }}
+          animate={{
+            x: [0, 500],
+            y: [0, 350],
+            opacity: [0, 1, 1, 0],
+            scaleX: [0.3, 1, 1, 0.3],
+          }}
+          transition={{
+            duration: star.duration,
+            repeat: Infinity,
+            delay: star.delay,
+            repeatDelay: 12,
+            ease: 'easeOut',
+          }}
+        />
+      ))}
+
+      {/* Floating cosmic dust particles */}
+      {Array.from({ length: 30 }, (_, i) => (
+        <motion.div
+          key={`dust-${i}`}
+          className="absolute rounded-full"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            width: Math.random() * 4 + 1,
+            height: Math.random() * 4 + 1,
+            backgroundColor: ['#a855f7', '#60efff', '#00ff87', '#f43f5e'][i % 4],
+            filter: 'blur(1px)',
+          }}
+          animate={{
+            y: [0, -100, 0],
+            x: [0, Math.random() * 50 - 25, 0],
+            opacity: [0, 0.6, 0],
+          }}
+          transition={{
+            duration: Math.random() * 10 + 8,
+            repeat: Infinity,
+            delay: Math.random() * 5,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+
+      {/* Central aurora glow */}
+      <motion.div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] rounded-full pointer-events-none"
+        style={{
+          background: `
+            radial-gradient(circle, 
+              hsl(260 60% 40% / 0.08) 0%, 
+              hsl(200 80% 40% / 0.05) 30%,
+              hsl(280 60% 30% / 0.03) 50%,
+              transparent 70%
+            )
+          `,
+        }}
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.3, 0.5, 0.3],
+        }}
+        transition={{
+          duration: 15,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
+
+      {/* Vignette overlay */}
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `radial-gradient(ellipse at center, transparent 30%, hsl(var(--background)) 100%)`,
+        }}
+      />
+    </div>
+  );
+}
