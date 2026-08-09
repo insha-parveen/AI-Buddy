@@ -59,13 +59,11 @@ These secrets are required for AI features to work.
 | ----------------------- | ------------ | ----------------------------------------------- |
 | `GROQ_API_KEY`        | Your API key | Get from https://console.groq.com/keys          |
 | `GEMINI_API_KEY`      | Your API key | Get from https://aistudio.google.com/apikey     |
-| `HUGGINGFACE_API_KEY` | Your API key | Get from https://huggingface.co/settings/tokens |
 | `RESEND_API_KEY`      | Your API key | If using Resend for email (optional)            |
 
 **Minimum required:**
 
 - At least **one of** `GROQ_API_KEY` **or** `GEMINI_API_KEY` (for chat, docs, finance, health, learning features)
-- `HUGGINGFACE_API_KEY` (for image generation feature)
 
 ### Via CLI (For Advanced Users):
 
@@ -73,14 +71,13 @@ These secrets are required for AI features to work.
 cd remix-of-aibuddy_final2-main
 supabase secrets set GROQ_API_KEY=your_key_here
 supabase secrets set GEMINI_API_KEY=your_key_here
-supabase secrets set HUGGINGFACE_API_KEY=your_key_here
 ```
 
 ---
 
 ## Step 4: Deploy Edge Functions
 
-Deploy each function to your Supabase project. You can run the commands manually or use the provided PowerShell helper script.
+Deploy each function to your Supabase project.
 
 ### Option A: Manual commands
 ```bash
@@ -89,8 +86,6 @@ cd remix-of-aibuddy_final2-main
 # Deploy all functions
 supabase functions deploy chat-ai
 supabase functions deploy document-summarize
-supabase functions deploy generate-image
-supabase functions deploy animate-image
 supabase functions deploy finance-advice
 supabase functions deploy health-insights
 supabase functions deploy learning-assistant
@@ -197,7 +192,6 @@ npm run dev
 | ------------ | -------------------------------------- | ------------------------ |
 | GROQ         | https://console.groq.com/keys          | Yes, with limits         |
 | Gemini       | https://aistudio.google.com/apikey     | Yes, free tier available |
-| Hugging Face | https://huggingface.co/settings/tokens | Yes, with usage limits   |
 | Google OAuth | https://console.cloud.google.com/apis  | Yes                      |
 | Resend Email | https://resend.com/api-keys            | Yes, with limits         |
 
@@ -209,7 +203,7 @@ Once setup is complete:
 
 1. Try **Email/Password Auth** on the login page
 2. Try **Chat** feature (requires GROQ or GEMINI key)
-3. Try **Generate Image** feature (requires HUGGINGFACE key)
+3. Try **Generate Image** feature
 4. Explore other features: Documents, Learning, Finance, health, Productivity
 
 ---

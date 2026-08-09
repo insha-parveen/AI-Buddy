@@ -6,12 +6,6 @@ verify_jwt = false
 [functions.document-summarize]
 verify_jwt = false
 
-[functions.generate-image]
-verify_jwt = false
-
-[functions.animate-image]
-verify_jwt = false
-
 [functions.finance-advice]
 verify_jwt = false
 

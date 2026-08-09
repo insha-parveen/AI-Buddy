@@ -1,12 +1,10 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { BarChart3, TrendingUp, Clock, Flame, RefreshCw, Activity, Zap, Target, Brain, Users, LineChart } from "lucide-react";
+import { motion } from "framer-motion";
+import { BarChart3, TrendingUp, Clock, Flame, RefreshCw, Activity, Zap, Target, Brain, LineChart } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import AppSidebar from "@/components/AppSidebar";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Bell, Sun } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { AreaChart, Area, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, LineChart as RechartsLineChart, Line, Legend, RadialBarChart, RadialBar } from "recharts";
+import { AreaChart, Area, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, LineChart as RechartsLineChart, Line } from "recharts";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { MilkyWayBackground } from "@/components/MilkyWayBackground";
 import { AnalyticsBackground } from "@/components/AnalyticsBackground";
@@ -58,7 +56,7 @@ export default function Analytics() {
     const allGoals = learnAllRes.data || [];
 
     const totalInteractions = messages.length + healthLogs.length + transactions.length;
-    const avgProgress = allGoals.length > 0 
+    const avgProgress = allGoals.length > 0
       ? Math.round(allGoals.reduce((sum, g) => sum + (g.progress || 0), 0) / allGoals.length)
       : 0;
 
@@ -104,7 +102,7 @@ export default function Analytics() {
     { name: 'Health Tracking', value: realStats.healthLogs > 0 ? Math.min(100, realStats.healthLogs * 10) : 0, fill: 'hsl(142 76% 45%)' },
     { name: 'Finance Management', value: realStats.transactions > 0 ? Math.min(100, realStats.transactions * 5) : 0, fill: 'hsl(45 100% 50%)' },
   ];
-  
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
@@ -120,10 +118,10 @@ export default function Analytics() {
       <MilkyWayBackground />
       <AnalyticsBackground />
       <AppSidebar />
-      
+
       <div className="flex-1 flex flex-col relative z-10">
         {/* Header */}
-        <motion.header 
+        <motion.header
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="border-b border-white/10 bg-background/10 backdrop-blur-2xl sticky top-0 z-50 shadow-[0_4px_30px_rgba(0,0,0,0.1)]"
@@ -161,7 +159,7 @@ export default function Analytics() {
         {/* Main Content */}
         <main className="flex-1 overflow-auto p-6 md:p-8">
           {/* Time Range Filter */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-wrap items-center gap-3 mb-8"
@@ -172,9 +170,9 @@ export default function Analytics() {
             </div>
             <div className="flex gap-2">
               {['7', '30', '90', '365'].map((range) => (
-                <Button 
+                <Button
                   key={range}
-                  size="sm" 
+                  size="sm"
                   variant={timeRange === range ? "default" : "outline"}
                   onClick={() => setTimeRange(range)}
                   className={timeRange === range ? "" : "border-white/20 bg-white/5 hover:bg-white/10"}
@@ -189,7 +187,7 @@ export default function Analytics() {
           </motion.div>
 
           {/* Stats Grid */}
-          <motion.div 
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -246,12 +244,12 @@ export default function Analytics() {
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
                       <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" fontSize={12} />
                       <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: 'hsl(var(--background))', 
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--background))',
                           border: '1px solid hsl(var(--border))',
                           borderRadius: '8px'
-                        }} 
+                        }}
                       />
                       <Area type="monotone" dataKey="learning" stroke="hsl(188 100% 42%)" fillOpacity={1} fill="url(#colorLearning)" />
                       <Area type="monotone" dataKey="health" stroke="hsl(280 70% 60%)" fillOpacity={1} fill="url(#colorHealth)" />
@@ -287,12 +285,12 @@ export default function Analytics() {
                             <Cell key={`cell-${index}`} fill={entry.color} />
                           ))}
                         </Pie>
-                        <Tooltip 
-                          contentStyle={{ 
-                            backgroundColor: 'hsl(var(--background))', 
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: 'hsl(var(--background))',
                             border: '1px solid hsl(var(--border))',
                             borderRadius: '8px'
-                          }} 
+                          }}
                         />
                       </PieChart>
                     </ResponsiveContainer>
@@ -328,12 +326,12 @@ export default function Analytics() {
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
                       <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" fontSize={11} />
                       <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: 'hsl(var(--background))', 
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--background))',
                           border: '1px solid hsl(var(--border))',
                           borderRadius: '8px'
-                        }} 
+                        }}
                       />
                       <Line type="monotone" dataKey="chat" stroke="hsl(188 100% 42%)" strokeWidth={2} dot={{ fill: 'hsl(188 100% 42%)' }} />
                       <Line type="monotone" dataKey="health" stroke="hsl(280 70% 60%)" strokeWidth={2} dot={{ fill: 'hsl(280 70% 60%)' }} />
@@ -358,12 +356,12 @@ export default function Analytics() {
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
                       <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} />
                       <YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={11} width={70} />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: 'hsl(var(--background))', 
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--background))',
                           border: '1px solid hsl(var(--border))',
                           borderRadius: '8px'
-                        }} 
+                        }}
                       />
                       <Bar dataKey="value" fill="hsl(188 100% 42%)" radius={[0, 4, 4, 0]} />
                     </BarChart>

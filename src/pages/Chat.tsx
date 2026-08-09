@@ -167,7 +167,7 @@ export default function Chat() {
 
   const createNewConversation = async () => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) return null;
 
     const { data: conversation, error } = await supabase
       .from("chat_conversations")
@@ -177,12 +177,13 @@ export default function Chat() {
 
     if (error) {
       console.error("Error creating conversation:", error);
-      return;
+      return null;
     }
 
     setConversationId(conversation.id);
     setMessages([]);
     await loadConversations();
+    return conversation;
   };
 
   const handleDeleteConversation = async (e: React.MouseEvent, convId: string) => {
@@ -456,14 +457,16 @@ export default function Chat() {
     e.preventDefault();
     if (!input.trim() || loading) return;
 
-    // Create conversation if none exists
-    if (!conversationId) {
-      await createNewConversation();
-    }
-
     const userMessage = input.trim();
     setInput("");
     setLoading(true);
+
+    // Create conversation if none exists synchronously before using the ID
+    let activeConvId = conversationId;
+    if (!activeConvId) {
+      const conv = await createNewConversation();
+      if (conv) activeConvId = conv.id;
+    }
 
     const tempUserMessage: Message = {
       id: Math.random().toString(),
@@ -474,16 +477,16 @@ export default function Chat() {
     setMessages((prev) => [...prev, tempUserMessage]);
 
     try {
-      if (conversationId) {
+      if (activeConvId) {
         await supabase.from("chat_messages").insert({
-          conversation_id: conversationId,
+          conversation_id: activeConvId,
           role: "user",
           content: userMessage,
         });
       }
 
       const { data, error } = await supabase.functions.invoke("chat-ai", {
-        body: { message: userMessage, conversationId, language: selectedLanguage },
+        body: { message: userMessage, conversationId: activeConvId, language: selectedLanguage },
       });
 
       if (error) throw error;
@@ -496,19 +499,25 @@ export default function Chat() {
       };
       setMessages((prev) => [...prev, assistantMessage]);
 
-      if (conversationId) {
+      if (activeConvId) {
         await supabase.from("chat_messages").insert({
-          conversation_id: conversationId,
+          conversation_id: activeConvId,
           role: "assistant",
           content: data.response,
         });
 
-        // Update conversation title if it's the first message
-        if (messages.length === 0) {
+        // Update conversation title with the first user message
+        const { data: existingMsgs } = await supabase
+          .from("chat_messages")
+          .select("id")
+          .eq("conversation_id", activeConvId)
+          .limit(1);
+
+        if (existingMsgs && existingMsgs.length === 1) {
           await supabase
             .from("chat_conversations")
             .update({ title: userMessage.slice(0, 50) })
-            .eq("id", conversationId);
+            .eq("id", activeConvId);
           await loadConversations();
         }
       }

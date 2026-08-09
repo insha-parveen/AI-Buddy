@@ -8,7 +8,6 @@ Add these in **Supabase Dashboard → Settings → Edge Functions → Secrets**:
 |---|---|
 | `GROQ_API_KEY` | https://console.groq.com/keys |
 | `GEMINI_API_KEY` | https://aistudio.google.com/apikey |
-| `HUGGINGFACE_API_KEY` | https://huggingface.co/settings/tokens |
 
 > **Note:** `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` are auto-provided in Edge Functions.
 
@@ -309,8 +308,6 @@ Deploy each function with `supabase functions deploy <name>`:
 |---|---|---|
 | `chat-ai` | AI chat responses | `GROQ_API_KEY` or `GEMINI_API_KEY` |
 | `document-summarize` | Doc summary, Q&A, mind maps | `GROQ_API_KEY` or `GEMINI_API_KEY` |
-| `generate-image` | AI image generation | `HUGGINGFACE_API_KEY` |
-| `animate-image` | Image animation frames | **(none‑required or choose your AI provider)** |
 | `finance-advice` | Financial AI advice | `GROQ_API_KEY` or `GEMINI_API_KEY` |
 | `health-insights` | Health AI insights | `GROQ_API_KEY` or `GEMINI_API_KEY` |
 | `learning-assistant` | Flashcards, notes, quizzes | `GROQ_API_KEY` or `GEMINI_API_KEY` |
@@ -318,7 +315,7 @@ Deploy each function with `supabase functions deploy <name>`:
 
 ### Shared AI Client
 
-All AI functions (except `generate-image`) use `supabase/functions/_shared/ai-client.ts` which tries providers in priority (Groq or Gemini, or your chosen gateway). You need at least one of `GROQ_API_KEY` or `GEMINI_API_KEY` set.
+All AI functions use `supabase/functions/_shared/ai-client.ts` which tries providers in priority (Groq or Gemini, or your chosen gateway). You need at least one of `GROQ_API_KEY` or `GEMINI_API_KEY` set.
 
 ### config.toml
 
@@ -329,12 +326,6 @@ project_id = "YOUR_PROJECT_ID"
 verify_jwt = false
 
 [functions.document-summarize]
-verify_jwt = false
-
-[functions.generate-image]
-verify_jwt = false
-
-[functions.animate-image]
 verify_jwt = false
 
 [functions.finance-advice]
@@ -372,7 +363,6 @@ VITE_SUPABASE_PROJECT_ID=YOUR_PROJECT_ID
 
 ## 7. Important Notes
 
-- The `HUGGINGFACE_API_KEY`, `GROQ_API_KEY`, and `GEMINI_API_KEY` are completely independent — they don't interfere with each other.
-- Hugging Face is used **only** by `generate-image`. All other AI functions use Groq/Gemini.
+- The `GROQ_API_KEY` and `GEMINI_API_KEY` are independent — either one alone is sufficient for all AI features.
 - All tables use RLS with `auth.uid() = user_id` — users can only see their own data.
 - The `profiles` table is auto-populated on signup via the `handle_new_user` trigger.
