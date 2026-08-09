@@ -4,15 +4,13 @@ import {
   Heart, Activity, BarChart3, Calendar as CalendarIcon,
   Plus, Check, Trash2, Flame, Droplets, Moon,
   Brain, Dumbbell, Apple, Target, TrendingUp,
-  ChevronLeft, ChevronRight, Sparkles, Trophy, Zap, Loader2, RefreshCw
+  Sparkles, Trophy, Zap, Loader2, RefreshCw
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import AppSidebar from "@/components/AppSidebar";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sun } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FloatingElements } from "@/components/FloatingElements";
 import { supabase } from "@/integrations/supabase/client";
@@ -72,7 +70,6 @@ export default function Health() {
   const [newHabitIcon, setNewHabitIcon] = useState("heart");
   const [newHabitColor, setNewHabitColor] = useState("#22c55e");
   const [showAddHabit, setShowAddHabit] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
   const [dailyLog, setDailyLog] = useState<DailyLog>({
     sleep: 0,
     water: 0,
@@ -295,20 +292,13 @@ export default function Health() {
     toast.success("Habit deleted");
   };
 
-  // Calendar navigation
-  const currentMonth = selectedDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
-  const daysInMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate();
-  const firstDayOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1).getDay();
+  // Calendar is locked to the current month, aligned with the rest of the page
+  // which always shows today's data (daily log, stats, charts).
+  const currentMonth = new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+  const firstDayOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).getDay();
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
   const weekDays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-
-  const prevMonth = () => {
-    setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1, 1));
-  };
-
-  const nextMonth = () => {
-    setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 1));
-  };
 
   // Stats calculations
   const completedToday = habits.filter(h =>
@@ -462,17 +452,7 @@ export default function Health() {
               <p className="text-sm text-muted-foreground">Track habits and monitor your wellness journey</p>
             </motion.div>
             <div className="flex items-center gap-3">
-              <Select defaultValue="english">
-                <SelectTrigger className="w-[140px] bg-background/5 backdrop-blur-sm border-border/50">
-                  <SelectValue placeholder="Language" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="english">🇺🇸 English</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button variant="ghost" size="icon" className="hover:bg-primary/10">
-                <Sun className="w-5 h-5" />
-              </Button>
+              <span className="text-sm text-muted-foreground">🇺🇸 English</span>
             </div>
           </div>
         </header>
@@ -811,14 +791,8 @@ export default function Health() {
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                   <Card className="p-6 backdrop-blur-sm bg-background/5 border-border/50">
                     <h3 className="font-semibold mb-4">Activity Calendar</h3>
-                    <div className="mb-4 flex items-center justify-between">
-                      <Button variant="ghost" size="icon" onClick={prevMonth}>
-                        <ChevronLeft className="w-4 h-4" />
-                      </Button>
+                    <div className="mb-4 text-center">
                       <span className="font-medium">{currentMonth}</span>
-                      <Button variant="ghost" size="icon" onClick={nextMonth}>
-                        <ChevronRight className="w-4 h-4" />
-                      </Button>
                     </div>
                     <div className="grid grid-cols-7 gap-1 mb-2">
                       {weekDays.map(day => (
@@ -832,11 +806,11 @@ export default function Health() {
                         <div key={`empty-${i}`} />
                       ))}
                       {days.map(day => {
-                        const dateStr = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), day)
+                        const dateStr = new Date(new Date().getFullYear(), new Date().getMonth(), day)
                           .toISOString().split("T")[0];
                         const habitsCompleted = habits.filter(h => h.completedDates.includes(dateStr)).length;
                         const isToday = new Date().toDateString() ===
-                          new Date(selectedDate.getFullYear(), selectedDate.getMonth(), day).toDateString();
+                          new Date(new Date().getFullYear(), new Date().getMonth(), day).toDateString();
 
                         return (
                           <motion.button

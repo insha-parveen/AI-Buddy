@@ -51,6 +51,23 @@ export default function Settings() {
       setUser(user);
       setEditName(user?.user_metadata?.full_name || user?.email?.split('@')[0] || "");
       setLoading(false);
+
+      // Load saved preferences from the profiles table
+      if (user) {
+        const { data } = await supabase
+          .from("profiles")
+          .select("preferences")
+          .eq("id", user.id)
+          .single();
+
+        const prefs = data?.preferences as any;
+        if (prefs) {
+          if (typeof prefs.notifications === "boolean") setNotifications(prefs.notifications);
+          if (typeof prefs.soundAlerts === "boolean") setSoundAlerts(prefs.soundAlerts);
+          if (typeof prefs.language === "string") setLanguage(prefs.language);
+          if (typeof prefs.emailNotifications === "boolean") setEmailNotifications(prefs.emailNotifications);
+        }
+      }
     };
     getUser();
   }, []);
@@ -65,12 +82,31 @@ export default function Settings() {
     }
   };
 
-  const handleSaveSettings = () => {
+  const handleSaveSettings = async () => {
     setSaving(true);
-    setTimeout(() => {
-      setSaving(false);
+    try {
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (!currentUser) throw new Error("Not authenticated");
+
+      const preferences = {
+        notifications,
+        soundAlerts,
+        language,
+        emailNotifications,
+      };
+
+      const { error } = await supabase
+        .from("profiles")
+        .upsert({ id: currentUser.id, preferences });
+
+      if (error) throw error;
+
       toast({ title: "Settings Saved", description: "Your preferences have been updated successfully." });
-    }, 1000);
+    } catch (err: any) {
+      toast({ title: "Error", description: err?.message || "Failed to save settings.", variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleSaveProfile = async () => {
@@ -434,7 +470,7 @@ export default function Settings() {
                       <Smartphone className="w-4 h-4" />
                       Two-Factor Authentication
                     </span>
-                    <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-0">Enabled</Badge>
+                    <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-400 border-0">Coming Soon</Badge>
                   </Button>
                 </CardContent>
               </Card>
