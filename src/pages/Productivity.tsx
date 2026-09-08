@@ -24,6 +24,7 @@ import AppSidebar from "@/components/AppSidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { MilkyWayBackground } from "@/components/MilkyWayBackground";
 import { ProductivityVisuals } from "@/components/ProductivityVisuals";
+import { useShouldReduceAnimations } from "@/hooks/useReducedMotion";
 
 // Types
 interface Task {
@@ -70,6 +71,7 @@ const PRIORITY_CONFIG = {
 const CATEGORIES = ['Work', 'Personal', 'Health', 'Learning', 'Finance', 'Other'];
 
 export default function Productivity() {
+  const reduceAnimations = useShouldReduceAnimations();
   const { toast } = useToast();
   const { permission, isSupported, requestPermission, sendNotification } = useNotifications();
   const { playSound } = useSoundAlert();
@@ -461,8 +463,14 @@ export default function Productivity() {
 
   return (
     <div className="flex min-h-screen bg-background relative overflow-hidden">
-      <MilkyWayBackground />
-      <ProductivityVisuals />
+      {reduceAnimations ? (
+        <MilkyWayBackground />
+      ) : (
+        <>
+          <MilkyWayBackground />
+          <ProductivityVisuals />
+        </>
+      )}
       <AppSidebar />
       
       <div className="flex-1 flex flex-col relative z-10">

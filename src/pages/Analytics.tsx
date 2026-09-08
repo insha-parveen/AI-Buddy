@@ -8,11 +8,13 @@ import { AreaChart, Area, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { MilkyWayBackground } from "@/components/MilkyWayBackground";
 import { AnalyticsBackground } from "@/components/AnalyticsBackground";
+import { useShouldReduceAnimations } from "@/hooks/useReducedMotion";
 import { Progress } from "@/components/ui/progress";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function Analytics() {
+  const reduceAnimations = useShouldReduceAnimations();
   const [timeRange, setTimeRange] = useState('7');
   const [realStats, setRealStats] = useState({
     totalInteractions: 0,
@@ -115,8 +117,14 @@ export default function Analytics() {
 
   return (
     <div className="flex min-h-screen bg-background relative overflow-hidden">
-      <MilkyWayBackground />
-      <AnalyticsBackground />
+      {reduceAnimations ? (
+        <MilkyWayBackground />
+      ) : (
+        <>
+          <MilkyWayBackground />
+          <AnalyticsBackground />
+        </>
+      )}
       <AppSidebar />
 
       <div className="flex-1 flex flex-col relative z-10">

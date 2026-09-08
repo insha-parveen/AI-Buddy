@@ -16,6 +16,7 @@ import { FloatingElements } from "@/components/FloatingElements";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from "recharts";
+import { useShouldReduceAnimations } from "@/hooks/useReducedMotion";
 
 interface Habit {
   id: string;
@@ -65,6 +66,7 @@ const HABIT_COLORS = [
 const MOOD_EMOJIS = ["😢", "😕", "😐", "🙂", "😄"];
 
 export default function Health() {
+  const reduceAnimations = useShouldReduceAnimations();
   const [habits, setHabits] = useState<Habit[]>([]);
   const [newHabitName, setNewHabitName] = useState("");
   const [newHabitIcon, setNewHabitIcon] = useState("heart");
@@ -416,25 +418,27 @@ export default function Health() {
     <div className="flex min-h-screen bg-background relative overflow-hidden">
       <FloatingElements />
 
-      {/* Cyber Grid Background */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `
-              linear-gradient(to right, hsl(var(--primary)) 1px, transparent 1px),
-              linear-gradient(to bottom, hsl(var(--primary)) 1px, transparent 1px)
-            `,
-            backgroundSize: '40px 40px',
-          }}
-        />
-        {/* Scan Line Effect */}
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent h-[2px]"
-          animate={{ y: [0, 800, 0] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-        />
-      </div>
+      {/* Cyber Grid Background - only when animations are not reduced */}
+      {!reduceAnimations && (
+        <div className="fixed inset-0 pointer-events-none z-0">
+          <div
+            className="absolute inset-0 opacity-[0.03]"
+            style={{
+              backgroundImage: `
+                linear-gradient(to right, hsl(var(--primary)) 1px, transparent 1px),
+                linear-gradient(to bottom, hsl(var(--primary)) 1px, transparent 1px)
+              `,
+              backgroundSize: '40px 40px',
+            }}
+          />
+          {/* Scan Line Effect */}
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent h-[2px]"
+            animate={{ y: [0, 800, 0] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+          />
+        </div>
+      )}
 
       <AppSidebar />
 

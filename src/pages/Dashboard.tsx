@@ -9,10 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { MilkyWayBackground } from "@/components/MilkyWayBackground";
 import { ProductivityVisuals } from "@/components/ProductivityVisuals";
+import { useShouldReduceAnimations } from "@/hooks/useReducedMotion";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function Dashboard() {
+  const reduceAnimations = useShouldReduceAnimations();
   const navigate = useNavigate();
   const [dbStats, setDbStats] = useState({ conversations: 0, healthHabits: 0, transactions: 0, learningGoals: 0 });
 
@@ -182,8 +184,14 @@ export default function Dashboard() {
   return (
     <div className="flex min-h-screen bg-background relative overflow-hidden">
       {/* Background Effects */}
-      <MilkyWayBackground />
-      <ProductivityVisuals />
+      {reduceAnimations ? (
+        <MilkyWayBackground />
+      ) : (
+        <>
+          <MilkyWayBackground />
+          <ProductivityVisuals />
+        </>
+      )}
 
       <AppSidebar />
       
