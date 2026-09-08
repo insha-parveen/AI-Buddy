@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
-import { 
-  ListTodo, Clock, Target, Zap, CheckCircle2, 
+import {
+  ListTodo, Clock, Target, Zap, CheckCircle2,
   Timer, Brain, Sparkles, Star, Flame, Rocket,
   Calendar, TrendingUp, Award, Coffee
 } from "lucide-react";
+import { useShouldReduceAnimations } from "@/hooks/useReducedMotion";
 
 const floatingIcons = [
   { Icon: ListTodo, x: 5, y: 15, size: 24, color: "text-primary", delay: 0 },
@@ -24,17 +25,77 @@ const floatingIcons = [
 ];
 
 const orbConfigs = [
-  { x: 20, y: 30, size: 300, color1: "hsl(195 100% 50% / 0.15)", color2: "hsl(270 60% 60% / 0.08)", duration: 20 },
-  { x: 75, y: 60, size: 400, color1: "hsl(270 60% 60% / 0.12)", color2: "hsl(180 100% 50% / 0.06)", duration: 25 },
-  { x: 50, y: 85, size: 350, color1: "hsl(180 100% 50% / 0.1)", color2: "hsl(195 100% 50% / 0.05)", duration: 22 },
-  { x: 10, y: 70, size: 250, color1: "hsl(320 80% 55% / 0.1)", color2: "hsl(270 60% 60% / 0.05)", duration: 18 },
-  { x: 85, y: 20, size: 280, color1: "hsl(45 100% 50% / 0.08)", color2: "hsl(195 100% 50% / 0.04)", duration: 23 },
+  { x: 20, y: 30, size: 300, color1: "hsl(195 100% 50% / 0.15)", color2: "hsl(270 60% 60% / 0.08)", duration: 30 },
+  { x: 75, y: 60, size: 400, color1: "hsl(270 60% 60% / 0.12)", color2: "hsl(180 100% 50% / 0.06)", duration: 35 },
+  { x: 50, y: 85, size: 350, color1: "hsl(180 100% 50% / 0.1)", color2: "hsl(195 100% 50% / 0.05)", duration: 32 },
 ];
 
 export function ProductivityVisuals() {
+  const reduceAnimations = useShouldReduceAnimations();
+
+  // On reduced motion, render a static CSS-animated version
+  if (reduceAnimations) {
+    return (
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        {/* Static orbs */}
+        {orbConfigs.map((orb, i) => (
+          <div
+            key={`orb-${i}`}
+            className="static-orb"
+            style={{
+              left: `${orb.x}%`,
+              top: `${orb.y}%`,
+              width: orb.size,
+              height: orb.size,
+              background: `radial-gradient(circle, ${orb.color1} 0%, ${orb.color2} 50%, transparent 70%)`,
+              animationDuration: `${orb.duration}s`,
+              animationDelay: `${i * 5}s`,
+            }}
+          />
+        ))}
+
+        {/* Static icons - only first 6 */}
+        {floatingIcons.slice(0, 6).map(({ Icon, x, y, size, color, delay }, i) => (
+          <div
+            key={`icon-${i}`}
+            className={`static-icon ${color}`}
+            style={{
+              left: `${x}%`,
+              top: `${y}%`,
+              animationDelay: `${delay}s`,
+              animationDuration: `${14 + i * 0.8}s`,
+            }}
+          >
+            <Icon size={size} strokeWidth={1.5} />
+          </div>
+        ))}
+
+        {/* Static rings */}
+        {[
+          { x: 15, y: 25, size: 80, delay: 0 },
+          { x: 80, y: 70, size: 100, delay: 3 },
+          { x: 50, y: 50, size: 120, delay: 6 },
+        ].map((ring, i) => (
+          <div
+            key={`ring-${i}`}
+            className="static-ring"
+            style={{
+              left: `${ring.x}%`,
+              top: `${ring.y}%`,
+              width: ring.size,
+              height: ring.size,
+              animationDelay: `${ring.delay}s`,
+              animationDuration: `${8}s`,
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 will-change-auto">
-      {/* Animated gradient orbs */}
+      {/* Animated gradient orbs - reduced from 5 to 3 */}
       {orbConfigs.map((orb, i) => (
         <motion.div
           key={`orb-${i}`}
@@ -49,21 +110,21 @@ export function ProductivityVisuals() {
             transform: "translate(-50%, -50%)",
           }}
           animate={{
-            x: [0, 60, -40, 50, -20, 0],
-            y: [0, -50, 35, -30, 20, 0],
-            scale: [1, 1.25, 0.85, 1.2, 0.9, 1],
-            opacity: [0.5, 0.8, 0.3, 0.7, 0.4, 0.5],
+            x: [0, 40, -30, 20, 0],
+            y: [0, -30, 25, -15, 0],
+            scale: [1, 1.15, 0.9, 1.1, 1],
+            opacity: [0.4, 0.7, 0.3, 0.6, 0.4],
           }}
           transition={{
-            duration: orb.duration + 10,
+            duration: orb.duration,
             repeat: Infinity,
             ease: "easeInOut",
           }}
         />
       ))}
 
-      {/* Floating productivity icons */}
-      {floatingIcons.map(({ Icon, x, y, size, color, delay }, i) => (
+      {/* Floating productivity icons - reduced from 15 to 8 */}
+      {floatingIcons.slice(0, 8).map(({ Icon, x, y, size, color, delay }, i) => (
         <motion.div
           key={`icon-${i}`}
           className={`absolute ${color}`}
@@ -73,14 +134,14 @@ export function ProductivityVisuals() {
           }}
           initial={{ opacity: 0, scale: 0 }}
           animate={{
-            opacity: [0.15, 0.4, 0.1, 0.35, 0.15],
-            scale: [0.85, 1.15, 0.8, 1.1, 0.85],
-            y: [0, -30, 10, -20, 0],
-            x: [0, 15, -15, 10, 0],
-            rotate: [0, 12, -12, 8, 0],
+            opacity: [0.1, 0.3, 0.08, 0.25, 0.1],
+            scale: [0.9, 1.1, 0.85, 1.05, 0.9],
+            y: [0, -20, 8, -15, 0],
+            x: [0, 10, -10, 8, 0],
+            rotate: [0, 8, -8, 5, 0],
           }}
           transition={{
-            duration: 14 + i * 0.8,
+            duration: 16 + i * 1,
             delay: delay,
             repeat: Infinity,
             ease: "easeInOut",
@@ -90,26 +151,8 @@ export function ProductivityVisuals() {
         </motion.div>
       ))}
 
-      {/* Animated lines/connections */}
-      <svg className="absolute inset-0 w-full h-full opacity-20">
-        <motion.path
-          d="M 0,200 Q 200,100 400,200 T 800,200"
-          fill="none"
-          stroke="url(#gradient1)"
-          strokeWidth="1"
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={{ pathLength: 1, opacity: [0, 0.5, 0] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.path
-          d="M 100,400 Q 300,300 500,400 T 900,400"
-          fill="none"
-          stroke="url(#gradient2)"
-          strokeWidth="1"
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={{ pathLength: 1, opacity: [0, 0.4, 0] }}
-          transition={{ duration: 10, delay: 2, repeat: Infinity, ease: "easeInOut" }}
-        />
+      {/* Animated lines/connections - simplified */}
+      <svg className="absolute inset-0 w-full h-full opacity-15">
         <defs>
           <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="hsl(195 100% 50%)" />
@@ -122,13 +165,30 @@ export function ProductivityVisuals() {
             <stop offset="100%" stopColor="hsl(195 100% 50%)" />
           </linearGradient>
         </defs>
+        <motion.path
+          d="M 0,200 Q 200,100 400,200 T 800,200"
+          fill="none"
+          stroke="url(#gradient1)"
+          strokeWidth="1"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: [0, 0.4, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.path
+          d="M 100,400 Q 300,300 500,400 T 900,400"
+          fill="none"
+          stroke="url(#gradient2)"
+          strokeWidth="1"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: [0, 0.3, 0] }}
+          transition={{ duration: 15, delay: 3, repeat: Infinity, ease: "easeInOut" }}
+        />
       </svg>
 
-      {/* Pulsing rings */}
+      {/* Pulsing rings - reduced from 3 to 2 */}
       {[
         { x: 15, y: 25, size: 80, delay: 0 },
-        { x: 80, y: 70, size: 100, delay: 2 },
-        { x: 50, y: 50, size: 120, delay: 4 },
+        { x: 80, y: 70, size: 100, delay: 4 },
       ].map((ring, i) => (
         <motion.div
           key={`ring-${i}`}
@@ -141,11 +201,11 @@ export function ProductivityVisuals() {
             transform: "translate(-50%, -50%)",
           }}
           animate={{
-            scale: [1, 2.5, 1],
-            opacity: [0.4, 0, 0.4],
+            scale: [1, 2.2, 1],
+            opacity: [0.3, 0, 0.3],
           }}
           transition={{
-            duration: 8,
+            duration: 10,
             delay: ring.delay,
             repeat: Infinity,
             ease: "easeOut",
@@ -153,8 +213,8 @@ export function ProductivityVisuals() {
         />
       ))}
 
-      {/* Sparkle particles */}
-      {Array.from({ length: 20 }, (_, i) => (
+      {/* Sparkle particles - reduced from 20 to 8 */}
+      {Array.from({ length: 8 }, (_, i) => (
         <motion.div
           key={`sparkle-${i}`}
           className="absolute w-1 h-1 rounded-full bg-primary/60"
@@ -167,8 +227,8 @@ export function ProductivityVisuals() {
             scale: [0, 2, 0],
           }}
           transition={{
-            duration: 3 + Math.random() * 3,
-            delay: Math.random() * 6,
+            duration: 4 + Math.random() * 3,
+            delay: Math.random() * 8,
             repeat: Infinity,
             ease: "easeInOut",
           }}
