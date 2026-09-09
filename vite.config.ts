@@ -21,30 +21,17 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Separate vendor chunks cleanly - order matters, specific first
           if (id.includes('node_modules')) {
-            if (id.includes('@supabase/supabase-js')) return 'vendor-supabase';
-            if (id.includes('@radix-ui')) return 'vendor-radix';
-            if (id.includes('framer-motion')) return 'vendor-motion';
-            if (id.includes('recharts')) return 'vendor-charts';
-            if (id.includes('@tanstack/react-query')) return 'vendor-query';
-            if (id.includes('react-hook-form') || id.includes('@hookform/resolvers')) return 'vendor-forms';
-            if (id.includes('clsx') || id.includes('tailwind-merge') || id.includes('class-variance-authority') || id.includes('lucide-react') || id.includes('date-fns') || id.includes('zod')) return 'vendor-utils';
-            if (id.includes('react')) return 'vendor-react';
-            // Everything else in node_modules - split large deps
-            if (id.includes('html2canvas') || id.includes('jspdf') || id.includes('react-markdown')) return 'vendor-heavy';
-            return 'vendor-other';
+            // Heavy leaf libraries with no React dependency — safe to isolate.
+            if (id.includes('jspdf') || id.includes('html2canvas')) return 'vendor-pdf';
+            // Keep React and EVERY React-coupled library in one chunk.
+            // Splitting them apart caused a cross-chunk circular init:
+            // libraries that call createContext() at load time (e.g. next-themes)
+            // executed before React was defined -> "Cannot read properties of
+            // undefined (reading 'createContext')" white-screen crash in prod.
+            return 'vendor';
           }
-          // Page chunks - match exact files to avoid partial matches
-          if (id.endsWith('src/pages/Chat.tsx')) return 'page-chat';
-          if (id.endsWith('src/pages/Analytics.tsx')) return 'page-analytics';
-          if (id.endsWith('src/pages/Health.tsx')) return 'page-health';
-          if (id.endsWith('src/pages/Learning.tsx')) return 'page-learning';
-          if (id.endsWith('src/pages/Productivity.tsx')) return 'page-productivity';
-          if (id.endsWith('src/pages/Finance.tsx')) return 'page-finance';
-          if (id.endsWith('src/pages/Documents.tsx')) return 'page-documents';
-          if (id.endsWith('src/pages/Gallery.tsx')) return 'page-gallery';
-          if (id.endsWith('src/pages/Settings.tsx')) return 'page-settings';
+          // App code (pages/components) is split automatically via React.lazy.
         },
       },
     },
