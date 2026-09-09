@@ -25,7 +25,10 @@ import { FeatureShowcase } from "@/components/FeatureShowcase";
 import { TechStack } from "@/components/TechStack";
 import { useRef } from "react";
 
+import { useShouldReduceAnimations } from "@/hooks/useReducedMotion";
+
 const Landing = () => {
+  const reduceAnimations = useShouldReduceAnimations();
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -93,9 +96,15 @@ const Landing = () => {
 
   return (
     <div ref={containerRef} className="min-h-screen bg-background relative overflow-hidden">
-      <MilkyWayBackground />
-      <ProductivityVisuals />
-      
+      {reduceAnimations ? (
+        <MilkyWayBackground />
+      ) : (
+        <>
+          <MilkyWayBackground />
+          <ProductivityVisuals />
+        </>
+      )}
+
       {/* Floating Header */}
       <motion.header 
         style={{ opacity: headerOpacity }}

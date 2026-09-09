@@ -41,6 +41,7 @@ import { useToast } from "@/hooks/use-toast";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
 import { CyberParticles } from "@/components/CyberParticles";
+import { useShouldReduceAnimations } from "@/hooks/useReducedMotion";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import {
   Select,
@@ -124,6 +125,7 @@ const languages = [
 ];
 
 export default function Chat() {
+  const reduceAnimations = useShouldReduceAnimations();
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [input, setInput] = useState("");
@@ -538,19 +540,21 @@ export default function Chat() {
       <div className="flex min-h-screen w-full bg-background relative overflow-hidden">
         <CyberParticles />
 
-        {/* Cyber Grid Background */}
-        <div className="fixed inset-0 z-0 opacity-20">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `
-                linear-gradient(to right, hsl(var(--primary) / 0.1) 1px, transparent 1px),
-                linear-gradient(to bottom, hsl(var(--primary) / 0.1) 1px, transparent 1px)
-              `,
-              backgroundSize: '40px 40px',
-            }}
-          />
-        </div>
+        {/* Only show static grid on reduced motion */}
+        {reduceAnimations && (
+          <div className="fixed inset-0 z-0 opacity-10 pointer-events-none">
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage: `
+                  linear-gradient(to right, hsl(var(--primary) / 0.05) 1px, transparent 1px),
+                  linear-gradient(to bottom, hsl(var(--primary) / 0.05) 1px, transparent 1px)
+                `,
+                backgroundSize: '60px 60px',
+              }}
+            />
+          </div>
+        )}
 
         {/* App Sidebar with Toggle */}
         <AnimatePresence>

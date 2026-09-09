@@ -37,7 +37,10 @@ interface GalleryImage {
   created_at: string;
 }
 
+import { useShouldReduceAnimations } from "@/hooks/useReducedMotion";
+
 export default function Gallery() {
+  const reduceAnimations = useShouldReduceAnimations();
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -144,8 +147,14 @@ export default function Gallery() {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background relative overflow-hidden">
-        <MilkyWayBackground />
-        <ProductivityVisuals />
+        {reduceAnimations ? (
+          <MilkyWayBackground />
+        ) : (
+          <>
+            <MilkyWayBackground />
+            <ProductivityVisuals />
+          </>
+        )}
         <AppSidebar />
 
         <main className="flex-1 relative z-10 flex flex-col">
